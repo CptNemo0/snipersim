@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "simulator.h"
 #include "cache.h"
 #include "log.h"
@@ -24,6 +26,8 @@ Cache::Cache(
    m_cache_type(cache_type),
    m_fault_injector(fault_injector)
 {
+   std::cout<<"\treplacement policy: " << replacement_policy << "\n";
+   std::cout<<"\tcfgname: "<<cfgname<<"\n";
    m_set_info = CacheSet::createCacheSetInfo(name, cfgname, core_id, replacement_policy, m_associativity);
    m_sets = new CacheSet*[m_num_sets];
    for (UInt32 i = 0; i < m_num_sets; i++)

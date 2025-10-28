@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "cache_base.h"
 #include "utils.h"
 #include "log.h"
@@ -16,6 +18,11 @@ CacheBase::CacheBase(
    m_num_sets(num_sets),
    m_ahl(ahl)
 {
+   std::cout<<"Creating cache: "<<name<<"\n";
+   std::cout<<"\tsize: "<<m_cache_size << "B\n"
+            <<"\tassociativity: "<<m_associativity<<"\n"
+            <<"\tblock size: "<<m_blocksize<<"B\n"
+            <<"\tnumber of sets: "<<m_num_sets<<"\n"; 
    m_log_blocksize = floorLog2(m_blocksize);
    m_log_num_sets = floorLog2(m_num_sets);
 
