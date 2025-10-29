@@ -12,6 +12,7 @@
 #include "simulator.h"
 #include "config.h"
 #include "config.hpp"
+#include "cache_set_random_my.h"
 
 CacheSet::CacheSet(CacheBase::cache_t cache_type,
       UInt32 associativity, UInt32 blocksize):
@@ -164,7 +165,7 @@ CacheSet::createCacheSet(String cfgname, core_id_t core_id,
          return new CacheSetSRRIP(cfgname, core_id, cache_type, associativity, blocksize, dynamic_cast<CacheSetInfoLRU*>(set_info), getNumQBSAttempts(policy, cfgname, core_id));
 
       case CacheBase::RANDOM:
-         return new CacheSetRandom(cache_type, associativity, blocksize);
+         return new CacheSetRandomMy(cache_type, associativity, blocksize);
 
       default:
          LOG_PRINT_ERROR("Unrecognized Cache Replacement Policy: %i",
