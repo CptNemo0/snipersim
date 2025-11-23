@@ -41,6 +41,7 @@ class CacheSetLRU : public CacheSet
       UInt8* m_lru_bits;
       CacheSetInfoLRU* m_set_info;
       void moveToMRU(UInt32 accessed_index);
+      void moveSecondToMRU(UInt32 accessed_index); 
 };
 
 #endif /* CACHE_SET_LRU_H */

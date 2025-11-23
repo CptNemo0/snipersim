@@ -2,6 +2,7 @@
 #include "log.h"
 #include "stats.h"
 #include<iostream>
+#include<utility>
 
 // Implements LRU replacement, optionally augmented with Query-Based Selection [Jaleel et al., MICRO'10]
 
@@ -41,15 +42,18 @@ CacheSetLRU::getReplacementIndex(CacheCntlr *cntlr)
    {
       UInt32 index = 0;
       UInt8 max_bits = 0;
+      UInt32 second_index = 0;
       for (UInt32 i = 0; i < m_associativity; i++)
       {
          if (m_lru_bits[i] > max_bits && isValidReplacement(i))
          {
+            second_index = index;
             index = i;
             max_bits = m_lru_bits[i];
          }
       }
       LOG_ASSERT_ERROR(index < m_associativity, "Error Finding LRU bits");
+      LOG_ASSERT_ERROR(second_index < m_associativity, "Second index greater than associativity"); 
 
       bool qbs_reject = false;
       if (attempt < m_num_attempts - 1)
@@ -63,6 +67,8 @@ CacheSetLRU::getReplacementIndex(CacheCntlr *cntlr)
          // Block is contained in lower-level cache, and we have more tries remaining.
          // Move this block to MRU and try again
          moveToMRU(index);
+         // Move next attempt choice to MRU.
+         //moveToMRU(second_index);
          cntlr->incrementQBSLookupCost();
          continue;
       }
@@ -70,8 +76,11 @@ CacheSetLRU::getReplacementIndex(CacheCntlr *cntlr)
       {
          // Mark our newly-inserted line as most-recently used
          moveToMRU(index);
+         // Move next attempt choice to MRU.
+         //moveToMRU(second_index);
          m_set_info->incrementAttempt(attempt);
          return index;
+         //return second_index;
       }
    }
 
@@ -92,6 +101,16 @@ CacheSetLRU::moveToMRU(UInt32 accessed_index)
    {
       if (m_lru_bits[i] < m_lru_bits[accessed_index])
          m_lru_bits[i] ++;
+   }
+   m_lru_bits[accessed_index] = 0;
+}
+
+void 
+CacheSetLRU::moveSecondToMRU(UInt32 accessed_index) 
+{
+   for(UInt32 i = 0 ; i < m_associativity ; i++) 
+   {
+      m_lru_bits[i]++;
    }
    m_lru_bits[accessed_index] = 0;
 }

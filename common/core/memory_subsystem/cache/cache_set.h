@@ -7,6 +7,7 @@
 #include "lock.h"
 #include "random.h"
 #include "log.h"
+#include "eviction_history.h"
 
 #include <cstring>
 
@@ -34,6 +35,7 @@ class CacheSet
       UInt32 m_associativity;
       UInt32 m_blocksize;
       Lock m_lock;
+      EvictionHistory m_history;      
 
    public:
 
@@ -60,6 +62,8 @@ class CacheSet
       virtual void updateReplacementIndex(UInt32) = 0;
 
       bool isValidReplacement(UInt32 index);
+      
+      bool containsTagInHistory(IntPtr tag) const;
 };
 
 #endif /* CACHE_SET_H */

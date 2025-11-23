@@ -33,6 +33,7 @@ CacheSet::CacheSet(CacheBase::cache_t cache_type,
    } else {
       m_blocks = NULL;
    }
+   m_history = EvictionHistory(associativity);
 }
 
 CacheSet::~CacheSet()
@@ -244,4 +245,10 @@ bool CacheSet::isValidReplacement(UInt32 index)
    {
       return true;
    }
+}
+
+bool CacheSet::containsTagInHistory(IntPtr tag) const
+{
+   EvictionHistoryEntry entry {tag};
+   return m_history.contains(entry);
 }
