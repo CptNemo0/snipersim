@@ -15,6 +15,7 @@
 #include "cache_set_random_my.h"
 
 #include <iostream>
+#include <format>
 
 CacheSet::CacheSet(CacheBase::cache_t cache_type,
       UInt32 associativity, UInt32 blocksize):
@@ -104,6 +105,17 @@ CacheSet::insert(CacheBlockInfo* cache_block_info, Byte* fill_buff, bool* evicti
 {
    // This replacement strategy does not take into account the fact that
    // cache blocks can be voluntarily flushed or invalidated due to another write request
+   
+   // Remove from an entry that has a tag of the to-be-inserted block. 
+   // History entries should be unique. 
+   // Update debug counters.
+   insert_ctr++;   
+   if(m_history.remove_if_present({cache_block_info->getTag()}))
+   {
+      tih_ctr++;
+      // std::cout<<std::format("tih: {} insert: {}\n", tih_ctr, insert_ctr);
+   }
+
    const UInt32 index = getReplacementIndex(cntlr);
    assert(index < m_associativity);
 
@@ -116,6 +128,8 @@ CacheSet::insert(CacheBlockInfo* cache_block_info, Byte* fill_buff, bool* evicti
       evict_block_info->clone(m_cache_block_info_array[index]);
       if (evict_buff != NULL && m_blocks != NULL)
          memcpy((void*) evict_buff, &m_blocks[index * m_blocksize], m_blocksize);
+      // Push the evicted block to the eviction history queue.
+      m_history.push({m_cache_block_info_array[index]->getTag()});
    }
    else
    {

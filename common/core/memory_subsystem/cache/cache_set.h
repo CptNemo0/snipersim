@@ -36,6 +36,8 @@ class CacheSet
       UInt32 m_blocksize;
       Lock m_lock;
       EvictionHistory m_history;      
+      int tih_ctr = 0;
+      int insert_ctr = 0;
 
    public:
 
