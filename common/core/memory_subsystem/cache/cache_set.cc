@@ -14,6 +14,8 @@
 #include "config.hpp"
 #include "cache_set_random_my.h"
 
+#include <iostream>
+
 CacheSet::CacheSet(CacheBase::cache_t cache_type,
       UInt32 associativity, UInt32 blocksize):
       m_associativity(associativity), m_blocksize(blocksize)

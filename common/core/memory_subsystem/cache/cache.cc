@@ -26,6 +26,7 @@ Cache::Cache(
    m_cache_type(cache_type),
    m_fault_injector(fault_injector)
 {
+   std::cout<<"Creating cache\n";
    std::cout<<"\treplacement policy: " << replacement_policy << "\n";
    std::cout<<"\tcfgname: "<<cfgname<<"\n";
    m_set_info = CacheSet::createCacheSetInfo(name, cfgname, core_id, replacement_policy, m_associativity);

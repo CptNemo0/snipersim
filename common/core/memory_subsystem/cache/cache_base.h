@@ -60,6 +60,7 @@ class CacheBase
          SRRIP,
          SRRIP_QBS,
          RANDOM,
+         LFU,
          NUM_REPLACEMENT_POLICIES
       };
 

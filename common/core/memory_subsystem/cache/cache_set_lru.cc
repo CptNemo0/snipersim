@@ -1,6 +1,7 @@
 #include "cache_set_lru.h"
 #include "log.h"
 #include "stats.h"
+#include<iostream>
 
 // Implements LRU replacement, optionally augmented with Query-Based Selection [Jaleel et al., MICRO'10]
 

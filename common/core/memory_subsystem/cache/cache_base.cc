@@ -58,8 +58,9 @@ CacheBase::parseAddressHash(String hash_name)
 void
 CacheBase::splitAddress(const IntPtr addr, IntPtr& tag, UInt32& set_index) const
 {
+   //sizeof(addr) - 8
+   //m_log_blocksize - 6
    tag = addr >> m_log_blocksize;
-
    IntPtr linearAddress = m_ahl ? m_ahl->getLinearAddress(addr) : addr;
    IntPtr block_num = linearAddress >> m_log_blocksize;
 
@@ -114,6 +115,8 @@ CacheBase::splitAddress(const IntPtr addr, IntPtr& tag, UInt32& set_index) const
       default:
          LOG_PRINT_ERROR("Invalid hash function %d", m_hash);
    }
+
+//   std::cout<<"addr: "<< addr <<" tag: "<<tag<<" linear address: " <<linearAddress<<" block num: "<< block_num<<" set index: "<<set_index<<"\n";
 }
 
 void
