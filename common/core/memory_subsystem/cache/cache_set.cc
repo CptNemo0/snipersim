@@ -13,6 +13,7 @@
 #include "config.h"
 #include "config.hpp"
 #include "cache_set_random_my.h"
+#include "rl_extension.h"
 
 #include <iostream>
 #include <format>
@@ -34,7 +35,7 @@ CacheSet::CacheSet(CacheBase::cache_t cache_type,
    } else {
       m_blocks = NULL;
    }
-   m_history = EvictionHistory(associativity);
+   m_rlex = std::make_unique<RlExtension>(this, m_associativity);   
 }
 
 CacheSet::~CacheSet()
@@ -74,6 +75,7 @@ CacheSet::write_line(UInt32 line_index, UInt32 offset, Byte *in_buff, UInt32 byt
 CacheBlockInfo*
 CacheSet::find(IntPtr tag, UInt32* line_index)
 {
+   OnAccess(tag);
    for (SInt32 index = m_associativity-1; index >= 0; index--)
    {
       if (m_cache_block_info_array[index]->getTag() == tag)
@@ -105,17 +107,6 @@ CacheSet::insert(CacheBlockInfo* cache_block_info, Byte* fill_buff, bool* evicti
 {
    // This replacement strategy does not take into account the fact that
    // cache blocks can be voluntarily flushed or invalidated due to another write request
-   
-   // Remove from an entry that has a tag of the to-be-inserted block. 
-   // History entries should be unique. 
-   // Update debug counters.
-   insert_ctr++;   
-   if(m_history.remove_if_present({cache_block_info->getTag()}))
-   {
-      tih_ctr++;
-      // std::cout<<std::format("tih: {} insert: {}\n", tih_ctr, insert_ctr);
-   }
-
    const UInt32 index = getReplacementIndex(cntlr);
    assert(index < m_associativity);
 
@@ -125,11 +116,12 @@ CacheSet::insert(CacheBlockInfo* cache_block_info, Byte* fill_buff, bool* evicti
    {
       *eviction = true;
       // FIXME: This is a hack. I dont know if this is the best way to do
+      // This is EVICT BLOCK INFO not CACHE BLOCK INFO 
       evict_block_info->clone(m_cache_block_info_array[index]);
       if (evict_buff != NULL && m_blocks != NULL)
          memcpy((void*) evict_buff, &m_blocks[index * m_blocksize], m_blocksize);
-      // Push the evicted block to the eviction history queue.
-      m_history.push({m_cache_block_info_array[index]->getTag()});
+      // Notify observers that a block was evicted and is going to be replaced.   
+      OnEviction(evict_block_info->getTag(), cache_block_info->getTag());
    }
    else
    {
@@ -261,8 +253,36 @@ bool CacheSet::isValidReplacement(UInt32 index)
    }
 }
 
-bool CacheSet::containsTagInHistory(IntPtr tag) const
+void CacheSet::AddObserver(CacheSetObserver* observer)
 {
-   EvictionHistoryEntry entry {tag};
-   return m_history.contains(entry);
+   if(!observer) return;
+    m_observers.push_back(observer);
+}
+
+void CacheSet::RemoveObserver(CacheSetObserver* observer)
+{
+   if(!observer) return;
+   auto iterator = std::find(m_observers.begin(), m_observers.end(), observer);
+   if(iterator != m_observers.end())
+   {
+      m_observers.erase(iterator);
+   }
+}
+
+void CacheSet::OnAccess(IntPtr tag)
+{
+   for(size_t i = 0 ; i < m_observers.size() ; i++)
+   {
+      if(!m_observers[i]) continue;
+      m_observers[i]->OnAccess(tag);
+   }
+}
+
+void CacheSet::OnEviction(IntPtr old_tag, IntPtr new_tag)
+{
+   for(size_t i = 0 ; i < m_observers.size() ; i++)
+   {
+      if(!m_observers[i]) continue;
+      m_observers[i]->OnEviction(old_tag, new_tag);
+   }
 }

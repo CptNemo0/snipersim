@@ -7,9 +7,12 @@
 #include "lock.h"
 #include "random.h"
 #include "log.h"
-#include "eviction_history.h"
 
 #include <cstring>
+#include <vector>
+#include <memory>
+
+class RlExtension;
 
 // Per-cache object to store replacement-policy related info (e.g. statistics),
 // can collect data from all CacheSet* objects which are per set and implement the actual replacement policy
@@ -23,6 +26,11 @@ class CacheSetInfo
 class CacheSet
 {
    public:
+      class CacheSetObserver {
+         public:
+            virtual void OnAccess(IntPtr tag) = 0;
+            virtual void OnEviction(IntPtr old_tag, IntPtr new_tag) = 0;       
+      }; 
 
       static CacheSet* createCacheSet(String cfgname, core_id_t core_id, String replacement_policy, CacheBase::cache_t cache_type, UInt32 associativity, UInt32 blocksize, CacheSetInfo* set_info = NULL);
       static CacheSetInfo* createCacheSetInfo(String name, String cfgname, core_id_t core_id, String replacement_policy, UInt32 associativity);
@@ -35,10 +43,12 @@ class CacheSet
       UInt32 m_associativity;
       UInt32 m_blocksize;
       Lock m_lock;
-      EvictionHistory m_history;      
+      std::vector<CacheSetObserver*> m_observers;      
+      
+      std::unique_ptr<RlExtension> m_rlex;
       int tih_ctr = 0;
       int insert_ctr = 0;
-
+   
    public:
 
       CacheSet(CacheBase::cache_t cache_type,
@@ -65,7 +75,10 @@ class CacheSet
 
       bool isValidReplacement(UInt32 index);
       
-      bool containsTagInHistory(IntPtr tag) const;
+      void AddObserver(CacheSetObserver* observer);
+      void RemoveObserver(CacheSetObserver* observer);
+      void OnAccess(IntPtr tag);
+      void OnEviction(IntPtr old_tag, IntPtr new_tag);
 };
 
 #endif /* CACHE_SET_H */
