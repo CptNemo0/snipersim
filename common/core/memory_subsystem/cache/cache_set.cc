@@ -22,6 +22,7 @@ CacheSet::CacheSet(CacheBase::cache_t cache_type,
       UInt32 associativity, UInt32 blocksize):
       m_associativity(associativity), m_blocksize(blocksize)
 {
+   m_rlex = std::make_unique<RlExtension>(this, m_associativity);   
    m_cache_block_info_array = new CacheBlockInfo*[m_associativity];
    for (UInt32 i = 0; i < m_associativity; i++)
    {
@@ -35,7 +36,6 @@ CacheSet::CacheSet(CacheBase::cache_t cache_type,
    } else {
       m_blocks = NULL;
    }
-   m_rlex = std::make_unique<RlExtension>(this, m_associativity);   
 }
 
 CacheSet::~CacheSet()
@@ -75,11 +75,11 @@ CacheSet::write_line(UInt32 line_index, UInt32 offset, Byte *in_buff, UInt32 byt
 CacheBlockInfo*
 CacheSet::find(IntPtr tag, UInt32* line_index)
 {
-   OnAccess(tag);
    for (SInt32 index = m_associativity-1; index >= 0; index--)
    {
       if (m_cache_block_info_array[index]->getTag() == tag)
       {
+         OnAccess(m_cache_block_info_array[index]);
          if (line_index != NULL)
             *line_index = index;
          return (m_cache_block_info_array[index]);
@@ -121,7 +121,7 @@ CacheSet::insert(CacheBlockInfo* cache_block_info, Byte* fill_buff, bool* evicti
       if (evict_buff != NULL && m_blocks != NULL)
          memcpy((void*) evict_buff, &m_blocks[index * m_blocksize], m_blocksize);
       // Notify observers that a block was evicted and is going to be replaced.   
-      OnEviction(evict_block_info->getTag(), cache_block_info->getTag());
+      OnEviction(evict_block_info, cache_block_info);
    }
    else
    {
@@ -269,20 +269,20 @@ void CacheSet::RemoveObserver(CacheSetObserver* observer)
    }
 }
 
-void CacheSet::OnAccess(IntPtr tag)
+void CacheSet::OnAccess(CacheBlockInfo* block)
 {
    for(size_t i = 0 ; i < m_observers.size() ; i++)
    {
       if(!m_observers[i]) continue;
-      m_observers[i]->OnAccess(tag);
+      m_observers[i]->OnAccess(block);
    }
 }
 
-void CacheSet::OnEviction(IntPtr old_tag, IntPtr new_tag)
+void CacheSet::OnEviction(CacheBlockInfo* old_block, CacheBlockInfo* new_block)
 {
    for(size_t i = 0 ; i < m_observers.size() ; i++)
    {
       if(!m_observers[i]) continue;
-      m_observers[i]->OnEviction(old_tag, new_tag);
+      m_observers[i]->OnEviction(old_block, new_block);
    }
 }

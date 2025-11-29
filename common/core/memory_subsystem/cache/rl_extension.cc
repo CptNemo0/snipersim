@@ -1,6 +1,6 @@
 #include "rl_extension.h"
 #include <iostream>
-
+#include <format>
 RlExtension::RlExtension(CacheSet* cache_set, UInt32 associativity) :
                          m_set(cache_set), m_associativity(associativity)
 {
@@ -22,9 +22,10 @@ RlExtension::~RlExtension()
 
 // If tag is not found in the history this indicates favorable eviction,
 // conversly, if found in the history this indicates suboptimal eviction.
-void RlExtension::OnAccess(IntPtr tag) 
+void RlExtension::OnAccess(CacheBlockInfo* block) 
 {
-   if (m_history->contains({tag}))
+   const EvictionHistoryEntry entry {block};
+   if (m_history->contains(entry))
    {
       // negative reward
    }
@@ -34,19 +35,39 @@ void RlExtension::OnAccess(IntPtr tag)
    } 
 }
 
-void RlExtension::OnEviction(IntPtr evicted_tag, IntPtr new_tag)
+// On every eviction the algorithm places evicted block on the head of the size queue.
+// At the same time it keeps track of the amount of entries with each state by.
+void RlExtension::OnEviction(CacheBlockInfo* evicted_block, CacheBlockInfo* new_block)
 {
-   EvictionHistoryEntry evicted_entry {evicted_tag};
-   EvictionHistoryEntry new_entry {new_tag};   
-   
-   if(evicted_tag == new_tag) 
+   if(evicted_block->getTag() == new_block->getTag()) 
    {
       //std::cout<<"Evicted and new tag are the same\n";
       return;
    }
 
-   if(m_history->remove_if_present({new_tag}))
-   {
-      std::cout<<"Removing new tag from the history\n";      
+   // This looks confusig, however the evicted (old cache block) 
+   // block bocomes new history entry.
+   EvictionHistoryEntry new_entry {evicted_block};      
+   EvictionHistoryEntry old_entry;
+
+   [[maybe_unused]] const bool match_found = m_history->remove_if_present(new_entry, old_entry);
+   m_history->push(new_entry);
+
+   UpdateMESCount();
+}
+
+void RlExtension::UpdateMESCount()
+{
+   m_mes.clear();   
+   const auto& data = m_history->data();
+   for(const auto& entry : data) {
+      m_mes[entry.m_state]++;
    }
+
+   std::cout<<std::format("associativity: {}, size: {}, modified: {}, exclusive: {}, shared: {}\n", 
+                           m_associativity,  
+                           m_history->size(),
+                           m_mes[CacheState::cstate_t::MODIFIED], 
+                           m_mes[CacheState::cstate_t::EXCLUSIVE], 
+                           m_mes[CacheState::cstate_t::SHARED]);
 }

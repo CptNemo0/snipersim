@@ -14,42 +14,60 @@ concept VectorFullyCompatible = requires(std::vector<T> v, T obj)
    v.push_back(std::move(obj));
 };
 
-template <VectorFullyCompatible T>
+template <VectorFullyCompatible T, typename BinaryPredicate = std::equal_to<T>>
 class SizeQueue
 {
    public:
-   SizeQueue(UInt32 size) 
+   SizeQueue(UInt32 size, BinaryPredicate compare = BinaryPredicate()) : m_compare(std::move(compare)) 
    {
       m_data.resize(size);
    }
 
-   SizeQueue() 
+   SizeQueue(BinaryPredicate compare = BinaryPredicate()) : m_compare(std::move(compare)) 
    {
       m_data.resize(16);
    }
 
-   void push(T&& value) 
+   const T& head() {
+      return m_data[m_head];   
+   }
+
+   T push(const T& value) 
    {
+      auto old = m_data[m_head];
       m_data[m_head] = value;
       m_head = (m_head + 1) % m_data.size();
+      return old;
    }
 
    bool contains(const T& value) const 
    {
-      return m_data.end() != std::find(m_data.begin(), m_data.end(), value);
+      return m_data.end() != std::find_if(m_data.begin(), m_data.end(), [&](const T& element){return this->m_compare(element, value);});
    }
 
-   bool remove_if_present(T&& value) 
+   bool remove_if_present(const T& value, T old_value) 
    {
-      auto iterator = std::find(m_data.begin(), m_data.end(), value);
+      auto iterator = std::find_if(m_data.begin(), m_data.end(), [&](const T& element){return this->m_compare(element, value);});
       if(iterator == m_data.end()) return false;
+      old_value = *iterator;
       *iterator = T();
       return true;
+   }
+
+   std::size_t size() 
+   {
+      return m_data.size();
+   }
+   
+   const std::vector<T>& data() const 
+   {
+      return m_data;
    }
 
    private: 
       UInt32 m_head = 0;
       std::vector<T> m_data;
+      [[no_unique_address]] BinaryPredicate m_compare;
 };
 
 #endif // !SIZE_QUEUE_H_

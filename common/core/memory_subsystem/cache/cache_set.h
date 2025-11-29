@@ -28,8 +28,8 @@ class CacheSet
    public:
       class CacheSetObserver {
          public:
-            virtual void OnAccess(IntPtr tag) = 0;
-            virtual void OnEviction(IntPtr old_tag, IntPtr new_tag) = 0;       
+            virtual void OnAccess(CacheBlockInfo* tag) = 0;
+            virtual void OnEviction(CacheBlockInfo* old_block, CacheBlockInfo* new_block) = 0;       
       }; 
 
       static CacheSet* createCacheSet(String cfgname, core_id_t core_id, String replacement_policy, CacheBase::cache_t cache_type, UInt32 associativity, UInt32 blocksize, CacheSetInfo* set_info = NULL);
@@ -77,8 +77,8 @@ class CacheSet
       
       void AddObserver(CacheSetObserver* observer);
       void RemoveObserver(CacheSetObserver* observer);
-      void OnAccess(IntPtr tag);
-      void OnEviction(IntPtr old_tag, IntPtr new_tag);
+      void OnAccess(CacheBlockInfo* block);
+      void OnEviction(CacheBlockInfo* old_block, CacheBlockInfo* new_block);
 };
 
 #endif /* CACHE_SET_H */
