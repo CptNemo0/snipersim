@@ -53,6 +53,8 @@ void RlExtension::OnEviction(CacheBlockInfo* evicted_block, CacheBlockInfo* new_
    [[maybe_unused]] const bool match_found = m_history->remove_if_present(new_entry, old_entry);
    m_history->push(new_entry);
 
+   std::cout<<"Pushing entry with sharer count: "<<evicted_block->getSharerCount()<<"\n";
+
    UpdateMESCount();
 }
 
@@ -64,10 +66,10 @@ void RlExtension::UpdateMESCount()
       m_mes[entry.m_state]++;
    }
 
-   std::cout<<std::format("associativity: {}, size: {}, modified: {}, exclusive: {}, shared: {}\n", 
-                           m_associativity,  
-                           m_history->size(),
-                           m_mes[CacheState::cstate_t::MODIFIED], 
-                           m_mes[CacheState::cstate_t::EXCLUSIVE], 
-                           m_mes[CacheState::cstate_t::SHARED]);
+   //std::cout<<std::format("associativity: {}, size: {}, modified: {}, exclusive: {}, shared: {}\n", 
+   //                        m_associativity,  
+   //                        m_history->size(),
+   //                        m_mes[CacheState::cstate_t::MODIFIED], 
+   //                        m_mes[CacheState::cstate_t::EXCLUSIVE], 
+   //                        m_mes[CacheState::cstate_t::SHARED]);
 }

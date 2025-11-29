@@ -29,6 +29,8 @@ class CacheBlockInfo
 
       static const char* option_names[];
 
+      UInt32 m_sharer_count = 0;
+
    public:
       CacheBlockInfo(IntPtr tag = ~0,
             CacheState::cstate_t cstate = CacheState::INVALID,
@@ -58,6 +60,11 @@ class CacheBlockInfo
       BitsUsedType getUsage() const { return m_used; };
       bool updateUsage(UInt32 offset, UInt32 size);
       bool updateUsage(BitsUsedType used);
+
+      void addSharer() { m_sharer_count++; }
+      void removeSharer() { if(m_sharer_count > 0) m_sharer_count--; }
+      UInt32 getSharerCount() const { return m_sharer_count; }
+      void resetSharerCount() { m_sharer_count = 0; }   
 
       static const char* getOptionName(option_t option);
 };
