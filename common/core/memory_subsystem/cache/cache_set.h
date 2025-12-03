@@ -48,9 +48,9 @@ class CacheSet
       std::unique_ptr<RlExtension> m_rlex;
       int tih_ctr = 0;
       int insert_ctr = 0;
-   
    public:
 
+      String m_name;   
       CacheSet(CacheBase::cache_t cache_type,
             UInt32 associativity, UInt32 blocksize);
       virtual ~CacheSet();

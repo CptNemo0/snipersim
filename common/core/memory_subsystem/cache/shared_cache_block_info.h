@@ -7,7 +7,7 @@
 // Define to enable tracking of which previous-level caches share each cache line
 // Currently this is only used for asserts (makeing sure no non-sharers send use evictions)
 // but it takes up space, especially when sharing caches with a lot of cores
-//#define ENABLE_TRACK_SHARING_PREVCACHES
+#define ENABLE_TRACK_SHARING_PREVCACHES
 
 #ifdef ENABLE_TRACK_SHARING_PREVCACHES
 #include <bitset>

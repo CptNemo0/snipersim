@@ -26,9 +26,12 @@ CacheSetLRU::~CacheSetLRU()
 UInt32
 CacheSetLRU::getReplacementIndex(CacheCntlr *cntlr)
 {
+   bool shared_exists = false;
    // First try to find an invalid block
    for (UInt32 i = 0; i < m_associativity; i++)
    {
+      shared_exists |= (m_cache_block_info_array[i]->getSharerCount() > 1);
+      
       if (!m_cache_block_info_array[i]->isValid())
       {
          // Mark our newly-inserted line as most-recently used
@@ -36,6 +39,8 @@ CacheSetLRU::getReplacementIndex(CacheCntlr *cntlr)
          return i;
       }
    }
+
+   //if(shared_exists)  std::cout<<"\t\t\t"<<m_name<<" shared block exists\n";
 
    // Make m_num_attemps attempts at evicting the block at LRU position
    for(UInt8 attempt = 0; attempt < m_num_attempts; ++attempt)

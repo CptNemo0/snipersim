@@ -26,6 +26,12 @@ class RlExtension : public CacheSet::CacheSetObserver
       const UInt32 m_associativity;
       std::unique_ptr<EvictionHistory> m_history;
       std::unordered_map<CacheState::cstate_t, std::uint32_t> m_mes;
+
+      float m_m;
+      float m_e;
+      float m_s;
+      float m_at;
+      float m_bt;
 };
 
 #endif // !RL_EXTENSION_H_

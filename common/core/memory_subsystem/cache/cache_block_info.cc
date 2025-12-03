@@ -3,6 +3,7 @@
 #include "pr_l2_cache_block_info.h"
 #include "shared_cache_block_info.h"
 #include "log.h"
+#include <iostream>
 
 const char* CacheBlockInfo::option_names[] =
 {
@@ -67,6 +68,8 @@ CacheBlockInfo::clone(CacheBlockInfo* cache_block_info)
    m_owner = cache_block_info->m_owner;
    m_used = cache_block_info->m_used;
    m_options = cache_block_info->m_options;
+   m_owner_name = cache_block_info->m_owner_name;
+   m_sharer_count = cache_block_info->m_sharer_count;
 }
 
 bool

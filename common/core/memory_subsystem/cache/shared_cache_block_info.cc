@@ -1,5 +1,6 @@
 #include "shared_cache_block_info.h"
 #include "log.h"
+#include<iostream>
 
 #ifdef ENABLE_TRACK_SHARING_PREVCACHES
 
@@ -18,8 +19,9 @@ void
 SharedCacheBlockInfo::setCachedLoc(PrevCacheIndex idx)
 {
    LOG_ASSERT_ERROR(m_cached_locs.test(idx) == false, "location %u already in set", idx);
-
+   
    m_cached_locs.set(idx);
+   addSharer();
 }
 
 void
@@ -28,6 +30,7 @@ SharedCacheBlockInfo::clearCachedLoc(PrevCacheIndex idx)
    LOG_ASSERT_ERROR(m_cached_locs.test(idx) == true, "location %u not set", idx);
 
    m_cached_locs.reset(idx);
+   removeSharer();
 }
 
 #endif
@@ -37,7 +40,10 @@ SharedCacheBlockInfo::invalidate()
 {
    #ifdef ENABLE_TRACK_SHARING_PREVCACHES
    for(PrevCacheIndex idx = 0; idx < m_cached_locs.size(); ++idx)
+   {
       m_cached_locs.reset(idx);
+      removeSharer();
+   }
    #endif
    CacheBlockInfo::invalidate();
 }

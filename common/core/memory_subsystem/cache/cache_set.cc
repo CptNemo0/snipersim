@@ -107,7 +107,7 @@ CacheSet::insert(CacheBlockInfo* cache_block_info, Byte* fill_buff, bool* evicti
 {
    // This replacement strategy does not take into account the fact that
    // cache blocks can be voluntarily flushed or invalidated due to another write request
-   const UInt32 index = getReplacementIndex(cntlr);
+   const UInt32 index =  getReplacementIndex(cntlr);
    assert(index < m_associativity);
 
    assert(eviction != NULL);
@@ -120,6 +120,7 @@ CacheSet::insert(CacheBlockInfo* cache_block_info, Byte* fill_buff, bool* evicti
       evict_block_info->clone(m_cache_block_info_array[index]);
       if (evict_buff != NULL && m_blocks != NULL)
          memcpy((void*) evict_buff, &m_blocks[index * m_blocksize], m_blocksize);
+    // std::cout<<"Evicting block from " << evict_block_info->m_owner_name << " with "<<evict_block_info->getSharerCount() <<" sharers\n";
       // Notify observers that a block was evicted and is going to be replaced.   
       OnEviction(evict_block_info, cache_block_info);
    }

@@ -29,9 +29,12 @@ class CacheBlockInfo
 
       static const char* option_names[];
 
-      UInt32 m_sharer_count = 0;
+      UInt32 m_sharer_count = 1;
 
    public:
+
+      String m_owner_name;
+
       CacheBlockInfo(IntPtr tag = ~0,
             CacheState::cstate_t cstate = CacheState::INVALID,
             UInt64 options = 0);
