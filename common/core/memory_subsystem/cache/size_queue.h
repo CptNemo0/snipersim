@@ -5,6 +5,7 @@
 #include <vector>
 #include <concepts>
 #include <algorithm>
+#include <iostream>
 
 template<typename T>
 concept VectorFullyCompatible = requires(std::vector<T> v, T obj) 
@@ -43,6 +44,13 @@ class SizeQueue
    bool contains(const T& value) const 
    {
       return m_data.end() != std::find_if(m_data.begin(), m_data.end(), [&](const T& element){return this->m_compare(element, value);});
+   }
+
+   void remove(const T& value) 
+   {   
+      auto iterator = std::find_if(m_data.begin(), m_data.end(), [&](const T& element){return this->m_compare(element, value);});
+      if(iterator == m_data.end()) return;
+      *iterator = T();
    }
 
    bool remove_if_present(const T& value, T old_value) 

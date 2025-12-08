@@ -18,6 +18,8 @@ class RlExtension : public CacheSet::CacheSetObserver
       virtual void OnAccess(CacheBlockInfo* block) override;
       virtual void OnEviction(CacheBlockInfo* evicted_block, CacheBlockInfo* new_block) override;
 
+      bool ShouldEvict(const CacheBlockInfo* block) const;
+
    private:
       // Updates the counts of Modified, Exclusive and Shared found in the m_history.
       void UpdateMESCount();      
@@ -27,11 +29,11 @@ class RlExtension : public CacheSet::CacheSetObserver
       std::unique_ptr<EvictionHistory> m_history;
       std::unordered_map<CacheState::cstate_t, std::uint32_t> m_mes;
 
-      float m_m;
-      float m_e;
-      float m_s;
-      float m_at;
-      float m_bt;
+      float m_m = 0.0f;
+      float m_e = 1.0f;
+      float m_s = 0.0f;
+      float m_at = 0.0f;
+      float m_bt = 1.0f;
 };
 
 #endif // !RL_EXTENSION_H_

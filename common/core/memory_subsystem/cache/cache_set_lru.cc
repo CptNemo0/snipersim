@@ -3,6 +3,7 @@
 #include "stats.h"
 #include<iostream>
 #include<utility>
+#include "rl_extension.h"
 
 // Implements LRU replacement, optionally augmented with Query-Based Selection [Jaleel et al., MICRO'10]
 
@@ -79,13 +80,28 @@ CacheSetLRU::getReplacementIndex(CacheCntlr *cntlr)
       }
       else
       {
-         // Mark our newly-inserted line as most-recently used
-         moveToMRU(index);
-         // Move next attempt choice to MRU.
-         //moveToMRU(second_index);
          m_set_info->incrementAttempt(attempt);
-         return index;
-         //return second_index;
+         
+         if(m_rlex)
+         {
+            if(m_rlex->ShouldEvict(m_cache_block_info_array[index]))
+            {
+               moveToMRU(index);
+               return index;
+            }
+            std::cout<<"second_index: "<<second_index<<"\n";
+            moveToMRU(second_index);
+            return second_index;     
+         }
+         else 
+         {
+            // Mark our newly-inserted line as most-recently used
+            moveToMRU(index);
+            // Move next attempt choice to MRU.
+            //moveToMRU(second_index);
+            return index;
+            //return second_index;
+         }
       }
    }
 
