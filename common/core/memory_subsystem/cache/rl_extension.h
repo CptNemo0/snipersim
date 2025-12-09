@@ -12,7 +12,15 @@
 class RlExtension : public CacheSet::CacheSetObserver
 {
    public: 
-      RlExtension(CacheSet* cache_set, UInt32 associativity);
+      enum class MODE 
+      {
+         DISABLED = 0,
+         STATE = 1,
+         BITSET = 2,
+         BOTH = 3
+      };
+
+      RlExtension(CacheSet* cache_set, UInt32 associativity, RlExtension::MODE mode);
       ~RlExtension();
    
       virtual void OnAccess(CacheBlockInfo* block) override;
@@ -28,6 +36,7 @@ class RlExtension : public CacheSet::CacheSetObserver
       const UInt32 m_associativity;
       std::unique_ptr<EvictionHistory> m_history;
       std::unordered_map<CacheState::cstate_t, std::uint32_t> m_mes;
+      MODE m_mode = MODE::BOTH;
 
       float m_m = 0.0f;
       float m_e = 1.0f;

@@ -81,19 +81,8 @@ CacheSetLRU::getReplacementIndex(CacheCntlr *cntlr)
       else
       {
          m_set_info->incrementAttempt(attempt);
-         
-         if(m_rlex)
-         {
-            if(m_rlex->ShouldEvict(m_cache_block_info_array[index]))
-            {
-               moveToMRU(index);
-               return index;
-            }
-            std::cout<<"second_index: "<<second_index<<"\n";
-            moveToMRU(second_index);
-            return second_index;     
-         }
-         else 
+
+         if(!m_rlex) 
          {
             // Mark our newly-inserted line as most-recently used
             moveToMRU(index);
@@ -102,6 +91,19 @@ CacheSetLRU::getReplacementIndex(CacheCntlr *cntlr)
             return index;
             //return second_index;
          }
+         
+         // Check if block has correct coherence state and 
+         // is shared by amount of vectors that qualifies it for eviction.
+         if(m_rlex->ShouldEvict(m_cache_block_info_array[index]))
+         {
+             moveToMRU(index);
+             return index;
+         }
+        
+         // Unless those requirements are satisfied 
+         // evict policie's second best option
+         moveToMRU(second_index);
+         return second_index;     
       }
    }
 

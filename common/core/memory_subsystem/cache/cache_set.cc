@@ -22,7 +22,7 @@ CacheSet::CacheSet(CacheBase::cache_t cache_type,
       UInt32 associativity, UInt32 blocksize):
       m_associativity(associativity), m_blocksize(blocksize)
 {
-   m_rlex = std::make_unique<RlExtension>(this, m_associativity);   
+   m_rlex = std::make_unique<RlExtension>(this, m_associativity, RlExtension::MODE::BOTH);   
    m_cache_block_info_array = new CacheBlockInfo*[m_associativity];
    for (UInt32 i = 0; i < m_associativity; i++)
    {

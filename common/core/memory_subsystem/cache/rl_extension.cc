@@ -2,8 +2,8 @@
 #include <iostream>
 #include <format>
 
-RlExtension::RlExtension(CacheSet* cache_set, UInt32 associativity) :
-                         m_set(cache_set), m_associativity(associativity)
+RlExtension::RlExtension(CacheSet* cache_set, UInt32 associativity, RlExtension::MODE mode) :
+                         m_set(cache_set), m_associativity(associativity), m_mode(mode)
 {
    if(m_set)
    {
@@ -108,7 +108,15 @@ bool RlExtension::ShouldEvict(const CacheBlockInfo* block) const
       bitset = m_at <= m_bt;
    }
 
-   return state && bitset;
+   switch(m_mode) 
+   {
+      case RlExtension::MODE::DISABLED: return true;
+      case RlExtension::MODE::STATE: return state;
+      case RlExtension::MODE::BITSET: return bitset;
+      case RlExtension::MODE::BOTH: return state && bitset;
+   }
+
+   LOG_PRINT_ERROR("Should not reach here");
 }
 
 void RlExtension::UpdateMESCount()
