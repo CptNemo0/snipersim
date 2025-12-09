@@ -2,6 +2,24 @@
 #include <iostream>
 #include <format>
 
+
+RlExtension::MODE RlExtension::parseMode(String value)
+{
+   if(value == "BOTH") 
+   {
+      return RlExtension::MODE::BOTH;
+   }
+   else if(value == "STATE") 
+   {
+      return RlExtension::MODE::STATE;
+   } 
+   else if(value == "BITSET")
+   {
+      return RlExtension::MODE::BITSET;
+   }
+   return RlExtension::MODE::DISABLED;
+}
+
 RlExtension::RlExtension(CacheSet* cache_set, UInt32 associativity, RlExtension::MODE mode) :
                          m_set(cache_set), m_associativity(associativity), m_mode(mode)
 {
@@ -66,8 +84,8 @@ void RlExtension::OnEviction(CacheBlockInfo* evicted_block, CacheBlockInfo* new_
    [[maybe_unused]] const bool match_found = m_history->remove_if_present(new_entry, old_entry);
    m_history->push(new_entry);
 
-   std::cout<<std::format("ok: {}, bad: {}\n", ok_evicts, bad_evicts);
-   //UpdateMESCount()i;
+   //std::cout<<std::format("ok: {}, bad: {}\n", ok_e`victs, bad_evicts);
+   UpdateMESCount();
 }
 
 bool RlExtension::ShouldEvict(const CacheBlockInfo* block) const

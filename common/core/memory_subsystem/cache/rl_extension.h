@@ -7,6 +7,7 @@
 
 #include "cache_block_info.h"
 #include "cache_set.h"
+#include "fixed_types.h"
 #include "eviction_history.h"
 
 class RlExtension : public CacheSet::CacheSetObserver
@@ -19,6 +20,8 @@ class RlExtension : public CacheSet::CacheSetObserver
          BITSET = 2,
          BOTH = 3
       };
+
+      static RlExtension::MODE parseMode(String value);
 
       RlExtension(CacheSet* cache_set, UInt32 associativity, RlExtension::MODE mode);
       ~RlExtension();
