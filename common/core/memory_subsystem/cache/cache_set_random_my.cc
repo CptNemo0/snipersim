@@ -1,6 +1,6 @@
 #include "cache_set_random_my.h"
 
-CacheSetRandomMy::CacheSetRandomMy(CacheBase::cache_t cache_type, UInt32 associativity, UInt32 block_size) : CacheSet(cache_type, associativity, block_size) 
+CacheSetRandomMy::CacheSetRandomMy(String cfgname, CacheBase::cache_t cache_type, UInt32 associativity, UInt32 block_size) : CacheSet(cfgname, cache_type, associativity, block_size) 
 {
    srand(time(0));
 }

@@ -4,9 +4,9 @@
 // NMRU: Not Most Recently Used
 
 CacheSetNMRU::CacheSetNMRU(
-      CacheBase::cache_t cache_type,
+      String cfgname, CacheBase::cache_t cache_type,
       UInt32 associativity, UInt32 blocksize) :
-   CacheSet(cache_type, associativity, blocksize)
+   CacheSet(cfgname, cache_type, associativity, blocksize)
 {
    m_lru_bits = new UInt8[m_associativity];
    for (UInt32 i = 0; i < m_associativity; i++)

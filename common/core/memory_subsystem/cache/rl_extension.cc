@@ -113,7 +113,7 @@ bool RlExtension::ShouldEvict(const CacheBlockInfo* block) const
    else 
    {
       // This is most likely INVALID, which is always a correct eviction thus state = true
-      std::cout<<"Different cache state: "<<CacheState::to_string(block->getCState())<<"\n";
+      // std::cout<<"Different cache state: "<<CacheState::to_string(block->getCState())<<"\n";
       state = true;
    }
    

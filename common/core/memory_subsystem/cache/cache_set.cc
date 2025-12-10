@@ -18,13 +18,13 @@
 #include <iostream>
 #include <format>
 
-CacheSet::CacheSet(CacheBase::cache_t cache_type,
+CacheSet::CacheSet(String cfgname, CacheBase::cache_t cache_type,
       UInt32 associativity, UInt32 blocksize):
-      m_associativity(associativity), m_blocksize(blocksize)
+      m_associativity(associativity), m_blocksize(blocksize), m_cfgname(cfgname)
 {
    config::Config *cfg = Sim()->getCfg();
    assert(cfg);
-   const String mode = cfg->getString("rl_extension/mode");
+   const String mode = cfg->getString(m_cfgname + "/rl_extension_mode");
    m_rlex = std::make_unique<RlExtension>(this, m_associativity, RlExtension::parseMode(mode));   
    m_cache_block_info_array = new CacheBlockInfo*[m_associativity];
    for (UInt32 i = 0; i < m_associativity; i++)
@@ -155,30 +155,30 @@ CacheSet::createCacheSet(String cfgname, core_id_t core_id,
    switch(policy)
    {
       case CacheBase::ROUND_ROBIN:
-         return new CacheSetRoundRobin(cache_type, associativity, blocksize);
+         return new CacheSetRoundRobin(cfgname, cache_type, associativity, blocksize);
 
       case CacheBase::LRU:
       case CacheBase::LRU_QBS:
-         return new CacheSetLRU(cache_type, associativity, blocksize, dynamic_cast<CacheSetInfoLRU*>(set_info), getNumQBSAttempts(policy, cfgname, core_id));
+         return new CacheSetLRU(cfgname, cache_type, associativity, blocksize, dynamic_cast<CacheSetInfoLRU*>(set_info), getNumQBSAttempts(policy, cfgname, core_id));
 
       case CacheBase::NRU:
-         return new CacheSetNRU(cache_type, associativity, blocksize);
+         return new CacheSetNRU(cfgname, cache_type, associativity, blocksize);
 
       case CacheBase::MRU:
-         return new CacheSetMRU(cache_type, associativity, blocksize);
+         return new CacheSetMRU(cfgname, cache_type, associativity, blocksize);
 
       case CacheBase::NMRU:
-         return new CacheSetNMRU(cache_type, associativity, blocksize);
+         return new CacheSetNMRU(cfgname, cache_type, associativity, blocksize);
 
       case CacheBase::PLRU:
-         return new CacheSetPLRU(cache_type, associativity, blocksize);
+         return new CacheSetPLRU(cfgname, cache_type, associativity, blocksize);
 
       case CacheBase::SRRIP:
       case CacheBase::SRRIP_QBS:
          return new CacheSetSRRIP(cfgname, core_id, cache_type, associativity, blocksize, dynamic_cast<CacheSetInfoLRU*>(set_info), getNumQBSAttempts(policy, cfgname, core_id));
 
       case CacheBase::RANDOM:
-         return new CacheSetRandomMy(cache_type, associativity, blocksize);
+         return new CacheSetRandomMy(cfgname, cache_type, associativity, blocksize);
 
       default:
          LOG_PRINT_ERROR("Unrecognized Cache Replacement Policy: %i",

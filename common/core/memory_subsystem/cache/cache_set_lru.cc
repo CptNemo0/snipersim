@@ -8,9 +8,9 @@
 // Implements LRU replacement, optionally augmented with Query-Based Selection [Jaleel et al., MICRO'10]
 
 CacheSetLRU::CacheSetLRU(
-      CacheBase::cache_t cache_type,
+      String cfgname, CacheBase::cache_t cache_type,
       UInt32 associativity, UInt32 blocksize, CacheSetInfoLRU* set_info, UInt8 num_attempts)
-   : CacheSet(cache_type, associativity, blocksize)
+   : CacheSet(cfgname, cache_type, associativity, blocksize)
    , m_num_attempts(num_attempts)
    , m_set_info(set_info)
 {

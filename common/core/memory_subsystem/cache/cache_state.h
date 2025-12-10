@@ -31,7 +31,7 @@ class CacheState
          switch(state) 
          {
          case cstate_t::CSTATE_FIRST:
-            return "CSTATE_FIRST";
+            return "CSTATE_FIRST || INVALID";
          case cstate_t::SHARED:
             return "SHARED";
          case cstate_t::SHARED_UPGRADING:

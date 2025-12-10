@@ -26,15 +26,12 @@ Cache::Cache(
    m_cache_type(cache_type),
    m_fault_injector(fault_injector)
 {
-   std::cout<<"Creating cache\n";
    std::cout<<"\treplacement policy: " << replacement_policy << "\n";
-   std::cout<<"\tcfgname: "<<cfgname<<"\n";
    m_set_info = CacheSet::createCacheSetInfo(name, cfgname, core_id, replacement_policy, m_associativity);
    m_sets = new CacheSet*[m_num_sets];
    for (UInt32 i = 0; i < m_num_sets; i++)
    {
       m_sets[i] = CacheSet::createCacheSet(cfgname, core_id, replacement_policy, m_cache_type, m_associativity, m_blocksize, m_set_info);
-      m_sets[i]->m_name = cfgname;
    }
 
    #ifdef ENABLE_SET_USAGE_HIST
@@ -138,7 +135,7 @@ Cache::insertSingleLine(IntPtr addr, Byte* fill_buff,
    CacheBlockInfo* cache_block_info = CacheBlockInfo::create(m_cache_type);
    cache_block_info->setTag(tag);
 
-   cache_block_info->m_owner_name = m_sets[set_index]->m_name;
+   cache_block_info->m_owner_name = m_sets[set_index]->getCfgName();
 
    m_sets[set_index]->insert(cache_block_info, fill_buff,
          eviction, evict_block_info, evict_buff, cntlr);

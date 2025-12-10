@@ -6,7 +6,7 @@
 class CacheSetMRU : public CacheSet
 {
    public:
-      CacheSetMRU(CacheBase::cache_t cache_type,
+      CacheSetMRU(String cfg, CacheBase::cache_t cache_type,
             UInt32 associativity, UInt32 blocksize);
       ~CacheSetMRU();
 

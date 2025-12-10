@@ -6,7 +6,7 @@
 class CacheSetRandom : public CacheSet
 {
    public:
-      CacheSetRandom(CacheBase::cache_t cache_type,
+      CacheSetRandom(String cfgname, CacheBase::cache_t cache_type,
             UInt32 associativity, UInt32 blocksize);
       ~CacheSetRandom();
 

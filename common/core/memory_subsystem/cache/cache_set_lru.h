@@ -29,7 +29,7 @@ class CacheSetInfoLRU : public CacheSetInfo
 class CacheSetLRU : public CacheSet
 {
    public:
-      CacheSetLRU(CacheBase::cache_t cache_type,
+      CacheSetLRU(String cfgname, CacheBase::cache_t cache_type,
             UInt32 associativity, UInt32 blocksize, CacheSetInfoLRU* set_info, UInt8 num_attempts);
       virtual ~CacheSetLRU();
 

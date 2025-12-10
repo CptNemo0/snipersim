@@ -1,9 +1,9 @@
 #include "cache_set_round_robin.h"
 
 CacheSetRoundRobin::CacheSetRoundRobin(
-      CacheBase::cache_t cache_type,
+      String cfgname, CacheBase::cache_t cache_type,
       UInt32 associativity, UInt32 blocksize) :
-   CacheSet(cache_type, associativity, blocksize)
+   CacheSet(cfgname, cache_type, associativity, blocksize)
 {
    m_replacement_index = m_associativity - 1;
 }

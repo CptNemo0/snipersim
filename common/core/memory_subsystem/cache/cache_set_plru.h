@@ -6,7 +6,7 @@
 class CacheSetPLRU : public CacheSet
 {
    public:
-      CacheSetPLRU(CacheBase::cache_t cache_type,
+      CacheSetPLRU(String cfgname, CacheBase::cache_t cache_type,
             UInt32 associativity, UInt32 blocksize);
       ~CacheSetPLRU();
 

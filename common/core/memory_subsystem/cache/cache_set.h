@@ -44,14 +44,12 @@ class CacheSet
       UInt32 m_blocksize;
       Lock m_lock;
       std::vector<CacheSetObserver*> m_observers;      
-      
+ 
+      String m_cfgname;     
       std::unique_ptr<RlExtension> m_rlex;
-      int tih_ctr = 0;
-      int insert_ctr = 0;
+   
    public:
-
-      String m_name;   
-      CacheSet(CacheBase::cache_t cache_type,
+      CacheSet(String cfgname, CacheBase::cache_t cache_type,
             UInt32 associativity, UInt32 blocksize);
       virtual ~CacheSet();
 
@@ -79,6 +77,8 @@ class CacheSet
       void RemoveObserver(CacheSetObserver* observer);
       void OnAccess(CacheBlockInfo* block);
       void OnEviction(CacheBlockInfo* old_block, CacheBlockInfo* new_block);
+      
+      String getCfgName() { return m_cfgname; };
 };
 
 #endif /* CACHE_SET_H */

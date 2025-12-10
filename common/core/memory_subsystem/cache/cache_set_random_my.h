@@ -6,7 +6,7 @@
 
 class CacheSetRandomMy : public  CacheSet {
    public:
-      CacheSetRandomMy(CacheBase::cache_t cache_type, UInt32 associativity, UInt32 block_size);
+      CacheSetRandomMy(String cfgname, CacheBase::cache_t cache_type, UInt32 associativity, UInt32 block_size);
       ~CacheSetRandomMy();
       UInt32 getReplacementIndex(CacheCntlr *cntlr);
       void updateReplacementIndex(UInt32 accessed_index);

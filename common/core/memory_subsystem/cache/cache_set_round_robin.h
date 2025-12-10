@@ -6,7 +6,7 @@
 class CacheSetRoundRobin : public CacheSet
 {
    public:
-      CacheSetRoundRobin(CacheBase::cache_t cache_type,
+      CacheSetRoundRobin(String cfgname, CacheBase::cache_t cache_type,
             UInt32 associativity, UInt32 blocksize);
       ~CacheSetRoundRobin();
 

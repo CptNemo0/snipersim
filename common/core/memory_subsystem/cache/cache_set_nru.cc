@@ -4,9 +4,9 @@
 // NRU: Not Recently Used. Some sort of Pseudo LRU policy.
 
 CacheSetNRU::CacheSetNRU(
-      CacheBase::cache_t cache_type,
+      String cfgname, CacheBase::cache_t cache_type,
       UInt32 associativity, UInt32 blocksize) :
-   CacheSet(cache_type, associativity, blocksize)
+   CacheSet(cfgname, cache_type, associativity, blocksize)
 {
    m_lru_bits = new UInt8[m_associativity];
    for (UInt32 i = 0; i < m_associativity; i++)
@@ -39,7 +39,7 @@ CacheSetNRU::getReplacementIndex(CacheCntlr *cntlr)
       }
       else if (m_lru_bits[i] == 0 && isValidReplacement(i))
       {
-         // Check if there are any valid replacement candidates with their LRU bit set to zero
+        // Check if there are any valid replacement candidates with their LRU bit set to zero
          // If there are none, we'll ignore the LRU bit below and select the first entry with isValidReplacement() as the victim
          have_zero_bit = true;
       }

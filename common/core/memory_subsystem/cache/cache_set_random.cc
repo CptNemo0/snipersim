@@ -6,9 +6,10 @@
 // RANDOM: Selects the victim line randomly (from among valid lines)
 
 CacheSetRandom::CacheSetRandom(
+      String cfgname,
       CacheBase::cache_t cache_type,
       UInt32 associativity, UInt32 blocksize) :
-   CacheSet(cache_type, associativity, blocksize)
+   CacheSet(cfgname, cache_type, associativity, blocksize)
 {
    m_rand.seed(time(NULL));
 }

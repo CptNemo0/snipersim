@@ -4,9 +4,9 @@
 // Tree LRU for 4 and 8 way caches
 
 CacheSetPLRU::CacheSetPLRU(
-      CacheBase::cache_t cache_type,
+      String cfgname, CacheBase::cache_t cache_type,
       UInt32 associativity, UInt32 blocksize) :
-   CacheSet(cache_type, associativity, blocksize)
+   CacheSet(cfgname, cache_type, associativity, blocksize)
 {
    LOG_ASSERT_ERROR(associativity == 4 || associativity == 8,
       "PLRU not implemted for associativity %d (only 4, 8)", associativity);
