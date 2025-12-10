@@ -16,7 +16,6 @@
 #include "rl_extension.h"
 
 #include <iostream>
-#include <format>
 
 CacheSet::CacheSet(String cfgname, CacheBase::cache_t cache_type,
       UInt32 associativity, UInt32 blocksize):
