@@ -1,3 +1,4 @@
+#include <format>
 #include <iostream>
 
 #include "cache_base.h"
@@ -71,6 +72,9 @@ CacheBase::splitAddress(const IntPtr addr, IntPtr& tag, UInt32& set_index) const
          break;
       case CacheBase::HASH_MOD:
          set_index = block_num % m_num_sets;
+         //if(m_name == "stlb_cache" || m_name == "dtlb_cache" || m_name == "itlb_cache")
+         //   std::cout<<std::format("cache: {}, address: {}, tag: {}, linear address: {}, block num: {}, set index: {}/{}\n", 
+         //                        m_name.c_str(), addr, tag, linearAddress, block_num, set_index, m_num_sets);
          break;
       case CacheBase::HASH_RNG1_MOD:
       {

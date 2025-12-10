@@ -43,6 +43,9 @@ RlExtension::~RlExtension()
 // conversly, if found in the history this indicates suboptimal eviction.
 void RlExtension::OnAccess(CacheBlockInfo* block) 
 {
+   // If the extension is disabled every there is nothing to do. 
+   if(m_mode == RlExtension::MODE::DISABLED) return;
+   
    const EvictionHistoryEntry entry {block};
    if (m_history->contains(entry))
    {
@@ -60,13 +63,18 @@ void RlExtension::OnAccess(CacheBlockInfo* block)
 // At the same time it keeps track of the amount of entries with each state by.
 void RlExtension::OnEviction(CacheBlockInfo* evicted_block, CacheBlockInfo* new_block)
 {
-   static int ok_evicts = 0;
-   static int bad_evicts = 0;
+   // If the extension is disabled every there is nothing to do. 
+   if(m_mode == RlExtension::MODE::DISABLED) return;
+   
+   // static int ok_evicts = 0;
+   // static int bad_evicts = 0;
+  
    if(evicted_block->getTag() == new_block->getTag()) 
    {
       return;
    }
 
+   /*
    if(ShouldEvict(evicted_block))
    {
       ok_evicts++;
@@ -75,6 +83,7 @@ void RlExtension::OnEviction(CacheBlockInfo* evicted_block, CacheBlockInfo* new_
    {
       bad_evicts++;
    }
+   */
 
    // This looks confusig, however the evicted (old cache block) 
    // block bocomes new history entry.
@@ -95,6 +104,12 @@ bool RlExtension::ShouldEvict(const CacheBlockInfo* block) const
       std::cout<<"Block is nullptr\n";
       return true;
    }
+   
+   // If the extension is disabled every there is nothing 
+   // deciding whether the eviction was wrong, thus 
+   // technically every eviction is correct.
+   if(m_mode == RlExtension::MODE::DISABLED) return true;
+
    bool state = false;
    bool bitset = false;
 
@@ -128,7 +143,7 @@ bool RlExtension::ShouldEvict(const CacheBlockInfo* block) const
 
    switch(m_mode) 
    {
-      case RlExtension::MODE::DISABLED: return true;
+      case RlExtension::MODE::DISABLED: LOG_PRINT_ERROR("Should not reach here. Disabled case was handled at the begining of the function");
       case RlExtension::MODE::STATE: return state;
       case RlExtension::MODE::BITSET: return bitset;
       case RlExtension::MODE::BOTH: return state && bitset;
@@ -139,6 +154,7 @@ bool RlExtension::ShouldEvict(const CacheBlockInfo* block) const
 
 void RlExtension::UpdateMESCount()
 {
+   if(m_mode == RlExtension::MODE::DISABLED) return;
    m_mes.clear();   
    int shared = 0;
    float size = 0.0f;
